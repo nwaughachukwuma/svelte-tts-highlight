@@ -32,6 +32,7 @@ export function getParagraphsItems(text: string): ParagraphItem[] {
   });
 }
 
+// Binary search for better performance with large texts
 export function findWordIndex(
   wordsOffsets: number[],
   charIndex: number
@@ -41,13 +42,17 @@ export function findWordIndex(
 
   while (low <= high) {
     const mid = Math.floor((low + high) / 2);
-    if (wordsOffsets[mid] === charIndex) {
-      return mid;
-    } else if (wordsOffsets[mid] < charIndex) {
+    if (charIndex >= wordsOffsets[mid]) {
+      if (
+        mid === wordsOffsets.length - 1 ||
+        charIndex < wordsOffsets[mid + 1]
+      ) {
+        return mid;
+      }
       low = mid + 1;
     } else {
       high = mid - 1;
     }
   }
-  return high; // or low-1, depending on your needs
+  return low;
 }
