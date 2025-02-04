@@ -1,7 +1,7 @@
 export interface ParagraphItem {
   words: string[];
-  pOffset: number;
-  lbOffset: number;
+  wordsOffset: number;
+  prevWordsOffset: number;
   text: string;
 }
 
@@ -24,16 +24,16 @@ export function getWordOffsets(text: string) {
 }
 
 export function getParagraphsItems(text: string): ParagraphItem[] {
-  let pOffset = 0;
-  let lbOffset = 0;
+  let wordsOffset = 0;
+  let prevWordsOffset = 0;
   const paragraphs = text.split("\n");
 
   return paragraphs.map((text) => {
     const words = text.match(/\S+/g) || [];
-    pOffset += words.length;
-    const payload = { words, pOffset, lbOffset, text };
+    wordsOffset += words.length;
+    const payload = { words, wordsOffset, prevWordsOffset, text };
 
-    lbOffset = pOffset;
+    prevWordsOffset = wordsOffset;
     return payload;
   });
 }

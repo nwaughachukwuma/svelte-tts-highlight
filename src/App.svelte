@@ -1,14 +1,12 @@
 <script lang="ts">
-  import SpeechHighlight from "./lib/SpeechHighlight.svelte";
-  const speechText =
-    "Welcome to our speech highlighting demo. This is a test of synchronized text and speech.\nLorem ipsum dolor simet and Alice in the wonderland.\nElon is a living legend and I'll meet him someday soon.";
+  import Demo from "./lib/Demo.svelte";
 </script>
 
 <main>
   <h1>Speech Highlight Demo</h1>
 
   <div class="card">
-    <SpeechHighlight {speechText} />
+    <Demo />
   </div>
 
   <p class="info">
