@@ -124,7 +124,7 @@
   }
 
   .highlighted {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.75);
     color: white;
   }
 
@@ -141,6 +141,7 @@
     border-radius: 4px;
     cursor: pointer;
     font-size: 1em;
+    outline: none;
     transition:
       background-color 0.2s ease,
       transform 0.1s ease;
