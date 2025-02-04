@@ -5,6 +5,12 @@ export interface ParagraphItem {
   text: string;
 }
 
+export interface SpeechState {
+  isPlaying: boolean;
+  currentWordIndex: number;
+  currentParagraphIndex: number;
+}
+
 export function getWordOffsets(text: string) {
   const regex = /\S+/g;
   const offsets: number[] = [];

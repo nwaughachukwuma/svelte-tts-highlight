@@ -1,51 +1,46 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { getWordOffsets, getParagraphsItems, findWordIndex } from "./utils";
+  import { speechStore } from "./speechStore.svelte";
 
+  export let speechRate = 1;
+  export let speechPitch = 1;
+  export let speechLang = "en-US";
   export let text: string =
     "Welcome to our speech highlighting demo. This is a test of synchronized text and speech.\nLorem ipsum dolor simet and Alice in the wonderland.\nElon is a living legend and I'll meet him someday soon.";
 
-  let currentWordIndex = -1;
-  let currentParagraphIndex = -1;
-
-  let isPlaying = false;
   let speechSynthesis: SpeechSynthesis | undefined;
   let utterance: SpeechSynthesisUtterance;
 
+  $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
   $: wordsOffsets = getWordOffsets(text);
   $: paragraphsWords = getParagraphsItems(text);
 
-  function resetSpeech() {
-    isPlaying = false;
-    currentWordIndex = -1;
-  }
-
   function stopSpeech(speechSynthesis: SpeechSynthesis) {
     speechSynthesis.cancel();
-    resetSpeech();
+    speechStore.reset();
   }
 
   function startSpeech(speechSynthesis: SpeechSynthesis) {
     utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1;
-    utterance.pitch = 1;
-    utterance.lang = "en-US";
+    utterance.rate = speechRate;
+    utterance.pitch = speechPitch;
+    utterance.lang = speechLang;
 
     // Updated onboundary handler to accurately compute the word index.
     utterance.onboundary = (evt) => {
       if (evt.name !== "word") return;
 
-      currentWordIndex = findWordIndex(wordsOffsets, evt.charIndex);
-      currentParagraphIndex = paragraphsWords.findIndex(
-        (p) => currentWordIndex < p.pOffset
-      );
+      const wIndex = findWordIndex(wordsOffsets, evt.charIndex);
+      const pIndex = paragraphsWords.findIndex((p) => wIndex < p.pOffset);
+      speechStore.updateIndices(wIndex, pIndex);
     };
 
-    utterance.onstart = () => (isPlaying = true);
-    utterance.onend = () => resetSpeech();
+    utterance.onstart = () => speechStore.startPlaying();
+    utterance.onend = () => speechStore.reset();
     utterance.onerror = (evt) => {
       console.error("Speech synthesis error:", evt);
-      resetSpeech();
+      speechStore.reset();
     };
 
     speechSynthesis.speak(utterance);
