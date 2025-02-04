@@ -3,17 +3,16 @@
   import { getWordOffsets, getParagraphsItems, findWordIndex } from "./utils";
   import { speechStore } from "./speechStore.svelte";
 
+  export let speechText: string;
   export let speechRate = 1;
   export let speechPitch = 1;
   export let speechLang = "en-US";
-  export let text: string;
 
   let speechSynthesis: SpeechSynthesis | undefined;
-  let utterance: SpeechSynthesisUtterance;
 
   $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
-  $: wordsOffsets = getWordOffsets(text);
-  $: paragraphsWords = getParagraphsItems(text);
+  $: wordsOffsets = getWordOffsets(speechText);
+  $: paragraphsItems = getParagraphsItems(speechText);
 
   function stopSpeech(speechSynthesis: SpeechSynthesis) {
     speechSynthesis.cancel();
@@ -21,7 +20,7 @@
   }
 
   function startSpeech(speechSynthesis: SpeechSynthesis) {
-    utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(speechText);
     utterance.rate = speechRate;
     utterance.pitch = speechPitch;
     utterance.lang = speechLang;
@@ -31,7 +30,7 @@
       if (evt.name !== "word") return;
 
       const wIndex = findWordIndex(wordsOffsets, evt.charIndex);
-      const pIndex = paragraphsWords.findIndex((p) => wIndex < p.pOffset);
+      const pIndex = paragraphsItems.findIndex((p) => wIndex < p.pOffset);
       speechStore.updateIndices(wIndex, pIndex);
     };
 
@@ -56,12 +55,7 @@
 
   onMount(() => {
     speechSynthesis = window.speechSynthesis;
-
-    return () => {
-      if (speechSynthesis && (utterance || isPlaying)) {
-        speechSynthesis.cancel();
-      }
-    };
+    return () => speechSynthesis && stopSpeech(speechSynthesis);
   });
 </script>
 
@@ -75,7 +69,7 @@
   </button>
 
   <div class="paragraph-container">
-    {#each paragraphsWords as { words, lbOffset }, i (i)}
+    {#each paragraphsItems as { words, lbOffset }, i (i)}
       <div
         class="text-container"
         class:highlighted-paragraph={i === currentParagraphIndex}
