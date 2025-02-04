@@ -1,22 +1,30 @@
 <script lang="ts" context="module">
-  function getWordOffsets(text: string) {
-    const words = text.replaceAll("\n", " ").split(" ");
-
-    let index = 0;
-    return words.map((word) => {
-      const offset = text.indexOf(word, index);
-      index = offset + word.length;
-      return offset;
-    });
+  interface ParagraphItem {
+    words: string[];
+    pOffset: number;
+    lbOffset: number;
+    text: string;
   }
 
-  function getParagraphsItems(text: string) {
-    const paragraphs = text.split("\n");
+  function getWordOffsets(text: string) {
+    const regex = /\S+/g;
+    const offsets: number[] = [];
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(text))) {
+      offsets.push(match.index);
+    }
+
+    return offsets;
+  }
+
+  function getParagraphsItems(text: string): ParagraphItem[] {
     let pOffset = 0;
     let lbOffset = 0;
+    const paragraphs = text.split("\n");
 
     return paragraphs.map((text) => {
-      const words = text.split(" ");
+      const words = text.match(/\S+/g) || [];
       pOffset += words.length;
       const payload = { words, pOffset, lbOffset, text };
 
