@@ -1,41 +1,6 @@
-<script lang="ts" context="module">
-  interface ParagraphItem {
-    words: string[];
-    pOffset: number;
-    lbOffset: number;
-    text: string;
-  }
-
-  function getWordOffsets(text: string) {
-    const regex = /\S+/g;
-    const offsets: number[] = [];
-    let match: RegExpExecArray | null;
-
-    while ((match = regex.exec(text))) {
-      offsets.push(match.index);
-    }
-
-    return offsets;
-  }
-
-  function getParagraphsItems(text: string): ParagraphItem[] {
-    let pOffset = 0;
-    let lbOffset = 0;
-    const paragraphs = text.split("\n");
-
-    return paragraphs.map((text) => {
-      const words = text.match(/\S+/g) || [];
-      pOffset += words.length;
-      const payload = { words, pOffset, lbOffset, text };
-
-      lbOffset = pOffset;
-      return payload;
-    });
-  }
-</script>
-
 <script lang="ts">
   import { onMount } from "svelte";
+  import { getWordOffsets, getParagraphsItems, findWordIndex } from "./utils";
 
   export let text: string =
     "Welcome to our speech highlighting demo. This is a test of synchronized text and speech.\nLorem ipsum dolor simet and Alice in the wonderland.\nElon is a living legend and I'll meet him someday soon.";
@@ -70,14 +35,7 @@
     // Updated onboundary handler to accurately compute the word index.
     utterance.onboundary = (event) => {
       if (event.name === "word") {
-        // Loop backward through the word offsets to find the appropriate word index.
-        for (let i = wordsOffsets.length - 1; i >= 0; i--) {
-          if (event.charIndex >= wordsOffsets[i]) {
-            currentWordIndex = i;
-            break;
-          }
-        }
-
+        currentWordIndex = findWordIndex(wordsOffsets, event.charIndex);
         currentParagraphIndex = paragraphsWords.findIndex(
           (p) => currentWordIndex < p.pOffset
         );
