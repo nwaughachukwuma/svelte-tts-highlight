@@ -1,4 +1,4 @@
-import { onMount, setContext, getContext } from "svelte";
+import { onMount } from "svelte";
 import { get } from "svelte/store";
 import { speechStore } from "./speechStore.svelte";
 import { findWordIndex, getParagraphsItems, getWordOffsets } from "./utils";
@@ -9,9 +9,7 @@ export interface ContextConfig {
   speechLang: string;
 }
 
-const CONTEXT_KEY = {};
-
-export function setSpeechContext(config: ContextConfig) {
+export function useSpeechHighlight(config: ContextConfig) {
   let speechSynthesis: SpeechSynthesis | null = null;
 
   function stopSpeech(speechSynthesis: SpeechSynthesis) {
@@ -19,7 +17,7 @@ export function setSpeechContext(config: ContextConfig) {
     speechStore.reset();
   }
 
-  function contextHandler(speechText: string) {
+  function useHandler(speechText: string) {
     const wordsOffsets = getWordOffsets(speechText);
     const paragraphsItems = getParagraphsItems(speechText);
 
@@ -65,11 +63,8 @@ export function setSpeechContext(config: ContextConfig) {
     return () => speechSynthesis && stopSpeech(speechSynthesis);
   });
 
-  return setContext(CONTEXT_KEY, {
-    contextHandler,
+  return {
+    useHandler,
     speechStore,
-  });
+  };
 }
-
-type SpeechContext = ReturnType<typeof setSpeechContext>;
-export const getSpeechContext = () => getContext<SpeechContext>(CONTEXT_KEY);

@@ -4,15 +4,15 @@
 </script>
 
 <script lang="ts">
-  import { setSpeechContext } from "./speechContext.svelte";
+  import { useSpeechHighlight } from "./useSpeechHighlight";
 
-  const { contextHandler, speechStore } = setSpeechContext({
+  const { useHandler, speechStore } = useSpeechHighlight({
     speechLang: "en-US",
     speechRate: 1,
     speechPitch: 1,
   });
 
-  $: ({ paragraphsItems, toggleSpeech } = contextHandler(speechText));
+  $: ({ paragraphsItems, toggleSpeech } = useHandler(speechText));
   $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
 </script>
 
