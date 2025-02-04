@@ -6,8 +6,7 @@
   export let speechRate = 1;
   export let speechPitch = 1;
   export let speechLang = "en-US";
-  export let text: string =
-    "Welcome to our speech highlighting demo. This is a test of synchronized text and speech.\nLorem ipsum dolor simet and Alice in the wonderland.\nElon is a living legend and I'll meet him someday soon.";
+  export let text: string;
 
   let speechSynthesis: SpeechSynthesis | undefined;
   let utterance: SpeechSynthesisUtterance;
