@@ -1,39 +1,52 @@
+<script lang="ts" context="module">
+  function getWordOffsets(text: string) {
+    const words = text.replaceAll("\n", " ").split(" ");
+
+    let index = 0;
+    return words.map((word) => {
+      const offset = text.indexOf(word, index);
+      index = offset + word.length;
+      return offset;
+    });
+  }
+
+  function getParagraphsItems(text: string) {
+    const paragraphs = text.split("\n");
+    let pOffset = 0;
+    let lbOffset = 0;
+
+    return paragraphs.map((text) => {
+      const words = text.split(" ");
+      pOffset += words.length;
+      const payload = { words, pOffset, lbOffset, text };
+
+      lbOffset = pOffset;
+      return payload;
+    });
+  }
+</script>
+
 <script lang="ts">
-  import { onDestroy } from "svelte";
+  import { onMount } from "svelte";
 
   export let text: string =
     "Welcome to our speech highlighting demo. This is a test of synchronized text and speech.\nLorem ipsum dolor simet and Alice in the wonderland.\nElon is a living legend and I'll meet him someday soon.";
-
-  let words: string[] = text.replaceAll("\n", " ").split(" ");
-  let paragraphs = text.split("\n");
 
   let currentWordIndex = -1;
   let currentParagraphIndex = -1;
 
   let isPlaying = false;
-  let speechSynthesis = window.speechSynthesis;
+  let speechSynthesis: SpeechSynthesis | undefined;
   let utterance: SpeechSynthesisUtterance;
 
-  let index = 0;
-  $: wordsOffsets = words.map((word) => {
-    const offset = text.indexOf(word, index);
-    index = offset + word.length;
-    return offset;
-  });
-
-  let pOffset = 0;
-  let lbOffset = 0;
-  $: paragraphsWords = paragraphs.map((text, index) => {
-    const words = text.split(" ");
-    pOffset += words.length;
-    const payload = { words, pOffset, lbOffset, text };
-
-    lbOffset = pOffset;
-
-    return payload;
-  });
+  $: wordsOffsets = getWordOffsets(text);
+  $: paragraphsWords = getParagraphsItems(text);
 
   function startSpeech() {
+    if (!speechSynthesis) {
+      throw new Error("Speech synthesis is not supported in this browser.");
+    }
+
     if (isPlaying) {
       speechSynthesis.cancel();
       isPlaying = false;
@@ -81,10 +94,13 @@
     speechSynthesis.speak(utterance);
   }
 
-  onDestroy(() => {
-    if (utterance || isPlaying) {
-      speechSynthesis.cancel();
-    }
+  onMount(() => {
+    speechSynthesis = window.speechSynthesis;
+    return () => {
+      if (speechSynthesis && (utterance || isPlaying)) {
+        speechSynthesis.cancel();
+      }
+    };
   });
 </script>
 
