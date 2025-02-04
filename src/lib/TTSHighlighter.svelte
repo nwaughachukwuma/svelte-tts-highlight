@@ -15,53 +15,54 @@
   $: wordsOffsets = getWordOffsets(text);
   $: paragraphsWords = getParagraphsItems(text);
 
-  function startSpeech() {
-    if (!speechSynthesis) {
-      throw new Error("Speech synthesis is not supported in this browser.");
-    }
+  function resetSpeech() {
+    isPlaying = false;
+    currentWordIndex = -1;
+  }
 
-    if (isPlaying) {
-      speechSynthesis.cancel();
-      isPlaying = false;
-      currentWordIndex = -1;
-      return;
-    }
+  function stopSpeech(speechSynthesis: SpeechSynthesis) {
+    speechSynthesis.cancel();
+    resetSpeech();
+  }
 
+  function startSpeech(speechSynthesis: SpeechSynthesis) {
     utterance = new SpeechSynthesisUtterance(text);
     utterance.rate = 1;
     utterance.pitch = 1;
     utterance.lang = "en-US";
 
     // Updated onboundary handler to accurately compute the word index.
-    utterance.onboundary = (event) => {
-      if (event.name === "word") {
-        currentWordIndex = findWordIndex(wordsOffsets, event.charIndex);
-        currentParagraphIndex = paragraphsWords.findIndex(
-          (p) => currentWordIndex < p.pOffset
-        );
-      }
+    utterance.onboundary = (evt) => {
+      if (evt.name !== "word") return;
+
+      currentWordIndex = findWordIndex(wordsOffsets, evt.charIndex);
+      currentParagraphIndex = paragraphsWords.findIndex(
+        (p) => currentWordIndex < p.pOffset
+      );
     };
 
-    utterance.onstart = () => {
-      isPlaying = true;
-    };
-
-    utterance.onend = () => {
-      isPlaying = false;
-      currentWordIndex = -1;
-    };
-
-    utterance.onerror = (event) => {
-      console.error("Speech synthesis error:", event);
-      isPlaying = false;
-      currentWordIndex = -1;
+    utterance.onstart = () => (isPlaying = true);
+    utterance.onend = () => resetSpeech();
+    utterance.onerror = (evt) => {
+      console.error("Speech synthesis error:", evt);
+      resetSpeech();
     };
 
     speechSynthesis.speak(utterance);
   }
 
+  function toggleSpeech() {
+    if (!speechSynthesis) {
+      throw new Error("Speech synthesis is not supported in this browser.");
+    }
+    return isPlaying
+      ? stopSpeech(speechSynthesis)
+      : startSpeech(speechSynthesis);
+  }
+
   onMount(() => {
     speechSynthesis = window.speechSynthesis;
+
     return () => {
       if (speechSynthesis && (utterance || isPlaying)) {
         speechSynthesis.cancel();
@@ -73,8 +74,8 @@
 <div class="speech-container">
   <button
     class="speech-button"
-    on:click={startSpeech}
-    aria-label={isPlaying ? "Stop speech" : "Start speech"}
+    on:click={toggleSpeech}
+    aria-label={isPlaying ? "Stop speech synthesis" : "Start speech synthesis"}
   >
     {isPlaying ? "Stop" : "Start"} Speech
   </button>
