@@ -12,7 +12,8 @@
     speechPitch: 1,
   });
 
-  $: ({ paragraphsItems, toggleSpeech } = useHandler(speechText));
+  const { paragraphsItems, toggleSpeech } = useHandler(speechText);
+
   $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
 </script>
 

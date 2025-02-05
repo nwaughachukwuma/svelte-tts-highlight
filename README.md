@@ -1,20 +1,18 @@
 # svelte-tts-highlight
 
-A Svelte component that provides synchronized text-to-speech with real-time word and paragraph highlighting. Perfect for accessibility enhancements, language learning applications, or any interface requiring speech synthesis with visual feedback.
+A lightweight, modular Svelte component for text-to-speech with synchronized word and paragraph highlighting. Perfect for creating accessible content with visual feedback.
 
 [![NPM Version](https://img.shields.io/npm/v/svelte-tts-highlight.svg)](https://www.npmjs.com/package/svelte-tts-highlight)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
-- 🎯 Real-time word highlighting synchronized with speech
-- 📝 Paragraph-level highlighting for better context
-- ⚡ Optimized performance with binary search algorithm
-- 🎛️ Configurable speech parameters (rate, pitch, language)
-- ♿ Accessibility-first design with ARIA attributes
-- 📱 Responsive and mobile-friendly
-- 🎨 Customizable styling
-- 🏷️ Written in TypeScript for better type safety
+- 🎯 Real-time word and paragraph highlighting
+- 📦 Modular architecture for flexible integration
+- ⚡ Efficient word searching with binary search
+- 🎛️ Configurable speech parameters
+- 💡 Simple and intuitive API
+- 📱 Responsive design
 
 ## Installation
 
@@ -26,114 +24,139 @@ pnpm add svelte-tts-highlight
 yarn add svelte-tts-highlight
 ```
 
-## Basic Usage
+## Usage
+
+The library is structured in a modular way, allowing you to use it according to your needs:
+
+### Basic Usage
 
 ```svelte
 <script lang="ts">
-  import SpeechHighlighter from 'svelte-tts-highlight';
+  import { useSpeechHighlight } from 'svelte-tts-highlight';
 
-  const text = `Welcome to our speech highlighting demo.
-This is a test of synchronized text and speech.
-Try clicking the button below to start!`;
+  const text = "Welcome to our demo. This is a test.";
+  const { useHandler, speechStore } = useSpeechHighlight({
+    speechRate: 1,
+    speechPitch: 1,
+    speechLang: 'en-US'
+  });
+
+  const { paragraphsItems, toggleSpeech } = useHandler(text);
+
+  $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
 </script>
 
-<SpeechHighlighter {text} />
+<button on:click={toggleSpeech}>
+  {isPlaying ? 'Stop' : 'Start'} Speech
+</button>
+
+<div class="paragraphs">
+  {#each paragraphsItems as { words, prevWordsOffset }, i}
+    <p class:active={i === currentParagraphIndex}>
+      {#each words as word, j}
+        <span class:highlight={j + prevWordsOffset === currentWordIndex}>
+          {word}
+        </span>
+      {/each}
+    </p>
+  {/each}
+</div>
 ```
 
-## Advanced Usage
+### Module Structure
 
-```svelte
-<script lang="ts">
-  import SpeechHighlighter from 'svelte-tts-highlight';
+The library consists of three main modules:
 
-  const text = `Custom configuration example.`;
-</script>
+1. **speechStore.ts** - Manages the speech state
 
-<SpeechHighlighter
-  text={text}
-  speechRate={1.2}
-  speechPitch={1.1}
-  speechLang="en-US"
-/>
+```typescript
+import { speechStore } from "svelte-tts-highlight";
+
+// Access store values
+$: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
 ```
 
-## Props
+2. **utils.ts** - Contains utility functions
 
-| Prop          | Type     | Default   | Description                                 |
-| ------------- | -------- | --------- | ------------------------------------------- |
-| `text`        | `string` | required  | The text content to be read and highlighted |
-| `speechRate`  | `number` | `1`       | Speech rate (0.1 to 10)                     |
-| `speechPitch` | `number` | `1`       | Speech pitch (0 to 2)                       |
-| `speechLang`  | `string` | `"en-US"` | Speech language code                        |
+```typescript
+import { type ParagraphItem, type SpeechState } from "svelte-tts-highlight";
+```
 
-## Styling
+3. **useSpeechHighlight.ts** - Main hook for speech functionality
 
-The component comes with default styling but can be customized using CSS custom properties:
+```typescript
+import { useSpeechHighlight } from "svelte-tts-highlight";
+```
 
-```css
-/* Override default styles */
-:global(.speech-container) {
-  --highlight-color: #3d5413;
-  --paragraph-highlight-color: rgba(128, 128, 128, 0.2);
-  --button-color: #ff3e00;
-  --button-hover-color: #ff5722;
+## API Reference
+
+### useSpeechHighlight
+
+```typescript
+const { useHandler, speechStore } = useSpeechHighlight({
+  speechRate?: number;  // default: 1
+  speechPitch?: number; // default: 1
+  speechLang?: string; // default: 'en-US'
+});
+```
+
+### useHandler
+
+```typescript
+const { paragraphsItems, toggleSpeech } = useHandler(text: string);
+```
+
+### Store Interface
+
+```typescript
+interface SpeechState {
+  isPlaying: boolean;
+  currentWordIndex: number;
+  currentParagraphIndex: number;
 }
 ```
 
-## Project Structure
+### ParagraphItem Interface
 
+```typescript
+interface ParagraphItem {
+  words: string[];
+  wordsOffset: number;
+  prevWordsOffset: number;
+  text: string;
+}
 ```
-src/
-├── lib/
-│   ├── SpeechHighlight.svelte   # Main component
-│   ├── speechStore.ts           # State management
-│   └── utils.ts                 # Utility functions & TS interfaces
-├── App.svelte                   # Root component
-└── main.ts                      # Application entry point
+
+## Styling
+
+Add your own CSS to style the highlighted words and paragraphs:
+
+```css
+.highlight {
+  background-color: #3d5413;
+  color: white;
+}
+
+.active {
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+span {
+  margin-right: 0.3em;
+  padding: 0.1em 0.2em;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
 ```
 
 ## Browser Support
 
 This component uses the Web Speech API. Check [browser compatibility](https://caniuse.com/?search=Web%20Speech%20API) for support details.
 
-## TypeScript Support
+## License
 
-The package includes TypeScript definitions. You can import types like this:
-
-```typescript
-import type { SpeechState } from "svelte-tts-highlight";
-```
+MIT
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built with Svelte and TypeScript
-- Inspired by the need for accessible text-to-speech solutions
-- Thanks to all contributors and the Svelte community
-
-## Support
-
-- Create an issue for bug reports
-- Star the repo if you find it useful
-- Follow for updates
-
-## Roadmap
-
-- [ ] Add support for multiple voices
-- [ ] Implement pause/resume functionality
-- [ ] Add text selection synchronization
-- [ ] Support for more languages
-- [ ] Add automated testing
+Contributions are welcome! Please feel free to submit a Pull Request.
