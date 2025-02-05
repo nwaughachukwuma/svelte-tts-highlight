@@ -5,7 +5,7 @@
   "description": "A lightweight, modular Svelte component for text-to-speech with synchronized word and paragraph highlighting.",
   "repository": {
     "type": "git",
-    "url": "nwaughachukwuma/svelte-tts-highlighter",
+    "url": "git+https://github.com/nwaughachukwuma/svelte-tts-highlighter.git",
     "directory": "https://github.com/nwaughachukwuma"
   },
   "author": "nwaughachukwuma<nwaughac@gmail.com>",
