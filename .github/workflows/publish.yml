@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install
       - run: npm run build
-      - if: matrix.node-version == 16
+      - if: matrix.node-version == 18
         uses: JS-DevTools/npm-publish@v3
         with:
           # token: ${{ secrets.NPM_TOKEN }}
