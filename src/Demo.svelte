@@ -4,7 +4,7 @@
 </script>
 
 <script lang="ts">
-  import { useSpeechHighlight } from "./useSpeechHighlight";
+  import { useSpeechHighlight } from "./lib";
 
   const { useHandler, speechStore } = useSpeechHighlight({
     speechLang: "en-US",

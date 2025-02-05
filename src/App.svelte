@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Demo from "./lib/Demo.svelte";
+  import Demo from "./Demo.svelte";
 </script>
 
 <main>
