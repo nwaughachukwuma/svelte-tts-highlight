@@ -30,6 +30,6 @@ jobs:
       - if: matrix.node-version == 18
         uses: JS-DevTools/npm-publish@v3
         with:
-          # token: ${{ secrets.NPM_TOKEN }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          registry: "https://npm.pkg.github.com"
+          token: ${{ secrets.NPM_TOKEN }}
+          # token: ${{ secrets.GITHUB_TOKEN }}
+          # registry: "https://npm.pkg.github.com"
