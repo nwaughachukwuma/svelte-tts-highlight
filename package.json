@@ -1,7 +1,7 @@
 {
   "name": "svelte-tts-highlighter",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight, modular Svelte component for text-to-speech with synchronized word and paragraph highlighting.",
   "repository": {
     "type": "git",

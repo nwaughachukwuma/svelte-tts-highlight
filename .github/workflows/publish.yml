@@ -31,5 +31,33 @@ jobs:
         uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          # token: ${{ secrets.GITHUB_TOKEN }}
-          # registry: "https://npm.pkg.github.com"
+
+  create-release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - id: changelog
+        run: |
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREVIOUS_TAG" ]; then
+            git log --pretty=format:"* %s" > CHANGELOG.md
+          else
+            git log --pretty=format:"* %s" $PREVIOUS_TAG..HEAD > CHANGELOG.md
+          fi
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          body_path: CHANGELOG.md
+          draft: false
+          prerelease: false
