@@ -1,8 +1,8 @@
-# svelte-tts-highlight
+# svelte-tts-highlighter
 
 A lightweight, modular Svelte component for text-to-speech with synchronized word and paragraph highlighting. Perfect for creating accessible content with visual feedback.
 
-[![NPM Version](https://img.shields.io/npm/v/svelte-tts-highlight.svg)](https://www.npmjs.com/package/svelte-tts-highlight)
+[![NPM Version](https://img.shields.io/npm/v/svelte-tts-highlighter.svg)](https://www.npmjs.com/package/svelte-tts-highlighter)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -17,11 +17,11 @@ A lightweight, modular Svelte component for text-to-speech with synchronized wor
 ## Installation
 
 ```bash
-npm install svelte-tts-highlight
+npm install svelte-tts-highlighter
 # or
-pnpm add svelte-tts-highlight
+pnpm add svelte-tts-highlighter
 # or
-yarn add svelte-tts-highlight
+yarn add svelte-tts-highlighter
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ The library is structured in a modular way, allowing you to use it according to 
 
 ```svelte
 <script lang="ts">
-  import { useSpeechHighlight } from 'svelte-tts-highlight';
+  import { useSpeechHighlight } from 'svelte-tts-highlighter';
 
   const text = "Welcome to our demo. This is a test.";
   const { useHandler, speechStore } = useSpeechHighlight({
@@ -70,7 +70,7 @@ The library consists of three main modules:
 1. **speechStore.ts** - Manages the speech state
 
 ```typescript
-import { speechStore } from "svelte-tts-highlight";
+import { speechStore } from "svelte-tts-highlighter";
 
 // Access store values
 $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
@@ -79,13 +79,13 @@ $: ({ isPlaying, currentWordIndex, currentParagraphIndex } = $speechStore);
 2. **utils.ts** - Contains utility functions
 
 ```typescript
-import { type ParagraphItem, type SpeechState } from "svelte-tts-highlight";
+import { type ParagraphItem, type SpeechState } from "svelte-tts-highlighter";
 ```
 
 3. **useSpeechHighlight.ts** - Main hook for speech functionality
 
 ```typescript
-import { useSpeechHighlight } from "svelte-tts-highlight";
+import { useSpeechHighlight } from "svelte-tts-highlighter";
 ```
 
 ## API Reference

@@ -1,17 +1,46 @@
 {
   "name": "svelte-tts-highlighter",
-  "private": true,
-  "version": "0.0.0",
+  "private": false,
+  "version": "1.0.0",
+  "description": "A lightweight, modular Svelte component for text-to-speech with synchronized word and paragraph highlighting.",
+  "repository": {
+    "type": "git",
+    "url": "nwaughachukwuma/svelte-tts-highlighter",
+    "directory": "https://github.com/nwaughachukwuma"
+  },
+  "author": "nwaughachukwuma<nwaughac@gmail.com>",
   "type": "module",
+  "main": "./dist/svelte-tts-highlighter.umd.js",
+  "module": "./dist/svelte-tts-highlighter.es.js",
   "scripts": {
+    "tsc": "tsc",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && tsc",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/svelte-tts-highlighter.es.js",
+      "require": "./dist/svelte-tts-highlighter.umd.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "highlighter",
+    "text-to-speech",
+    "svelte-tts-highlight",
+    "svelte-tts-highlighter",
+    "svelte-tts-highlighting"
+  ],
+  "sideEffects": false,
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tsconfig/svelte": "^5.0.4",
+    "@types/node": "^22.13.1",
     "svelte": "^5.15.0",
     "svelte-check": "^4.1.1",
     "typescript": "~5.6.2",
